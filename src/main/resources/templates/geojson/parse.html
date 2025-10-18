@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Парсинг GeoJSON</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .parse-section {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            background: white;
+            text-align: center;
+        }
+        .btn {
+            background: #007bff;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px;
+        }
+        .btn:hover {
+            background: #0056b3;
+        }
+        .btn-warning {
+            background: #ffc107;
+            color: #000;
+        }
+        .btn-warning:hover {
+            background: #e0a800;
+        }
+        .info-box {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .warning-box {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 20px 0;
+            color: #856404;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Парсинг GeoJSON файла</h1>
+        
+        <div class="info-box">
+            <h3>📁 Файл: sankt-peterburg.geojson</h3>
+            <p>Этот файл содержит данные о дорожно-транспортных происшествиях в Санкт-Петербурге.</p>
+        </div>
+        
+        <div class="warning-box">
+            <h4>⚠️ Внимание!</h4>
+            <p>Файл очень большой и содержит тысячи записей. Парсинг может занять некоторое время.</p>
+        </div>
+        
+        <div class="parse-section">
+            <h2>Начать парсинг GeoJSON файла</h2>
+            <p>Это действие загрузит все данные о ДТП из GeoJSON файла в базу данных.</p>
+            
+            <form th:action="@{/geojson/parse}" method="post">
+                <button type="submit" class="btn btn-warning">🚀 Начать парсинг</button>
+            </form>
+        </div>
+        
+        <div class="parse-section">
+            <h3>API для программного парсинга</h3>
+            <p>Для программного парсинга используйте POST запрос:</p>
+            <code>POST /geojson/api/parse</code>
+        </div>
+        
+        <div style="margin-top: 20px;">
+            <a href="/" class="btn">На главную</a>
+        </div>
+    </div>
+</body>
+</html>

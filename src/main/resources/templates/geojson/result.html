@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Результат парсинга</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .result-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            background: white;
+            text-align: center;
+        }
+        .success {
+            border-color: #28a745;
+            background: #d4edda;
+        }
+        .error {
+            border-color: #dc3545;
+            background: #f8d7da;
+        }
+        .btn {
+            background: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            text-decoration: none;
+            display: inline-block;
+            margin: 5px;
+        }
+        .btn:hover {
+            background: #0056b3;
+        }
+        .btn-success {
+            background: #28a745;
+        }
+        .btn-success:hover {
+            background: #1e7e34;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="result-card" th:classappend="${success != null ? 'success' : 'error'}">
+            <h2 th:if="${success}" style="color: #28a745;">✅ Успешно!</h2>
+            <h2 th:if="${error}" style="color: #dc3545;">❌ Ошибка!</h2>
+            
+            <p th:if="${success}" th:text="${success}"></p>
+            <p th:if="${error}" th:text="${error}"></p>
+        </div>
+        
+        <div style="text-align: center; margin-top: 20px;">
+            <a href="/geojson" class="btn">Парсить еще раз</a>
+            <a href="/" class="btn">На главную</a>
+        </div>
+    </div>
+</body>
+</html>
