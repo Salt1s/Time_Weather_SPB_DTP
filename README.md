@@ -15,3 +15,5 @@ To stop and remove the database container, run the following command from the sa
 docker-compose down
 ```
 This will stop the container, but the data will be preserved in the postgres_data Docker volume, so you won't lose it the next time you run docker-compose up -d.
+-----------------------------------------------------------------------------------------
+To start app Run Application file and go to localhost:8080 in browser
