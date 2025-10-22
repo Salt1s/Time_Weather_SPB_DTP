@@ -25,6 +25,12 @@ public class GeoJsonController {
     // Парсинг GeoJSON файла
     @PostMapping("/parse")
     public String parseGeoJson(Model model) {
+        // Проверяем, есть ли уже данные в БД
+        if (geoJsonParserService.hasDataInDatabase()) {
+            model.addAttribute("error", "Ошибка: файл уже был распарсен ранее. В базе данных уже есть информация об авариях.");
+            return "geojson/result";
+        }
+        
         try {
             int importedCount = geoJsonParserService.parseAndSaveGeoJson();
             model.addAttribute("success", "Успешно импортировано " + importedCount + " записей из GeoJSON");
@@ -34,21 +40,5 @@ public class GeoJsonController {
             return "geojson/result";
         }
     }
-    
-    // API для парсинга
-    @PostMapping("/api/parse")
-    @ResponseBody
-    public ResponseEntity<?> parseGeoJsonApi() {
-        try {
-            int importedCount = geoJsonParserService.parseAndSaveGeoJson();
-            return ResponseEntity.ok().body(new Object() {
-                public final String message = "Успешно импортировано " + importedCount + " записей из GeoJSON";
-                public final int count = importedCount;
-            });
-        } catch (IOException e) {
-            return ResponseEntity.badRequest().body(new Object() {
-                public final String error = "Ошибка при парсинге GeoJSON: " + e.getMessage();
-            });
-        }
-    }
 }
+

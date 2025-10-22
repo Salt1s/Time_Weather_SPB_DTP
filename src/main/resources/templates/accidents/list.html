@@ -126,6 +126,34 @@
             <a th:href="@{/}" class="btn btn-secondary">🏠 На главную</a>
         </div>
 
+        <!-- Расшифровки кодов -->
+        <div th:if="${accidents != null and !accidents.empty}" style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+            <h3 style="margin-top: 0; color: #333; text-align: center;">📋 Расшифровка кодов</h3>
+            <div style="display: flex; justify-content: space-around; flex-wrap: wrap;">
+                <div style="flex: 1; min-width: 300px; margin: 10px;">
+                    <h4 style="color: #007bff; margin-bottom: 10px;">🌤️ Коды погоды:</h4>
+                    <ul style="margin: 0; padding-left: 20px;">
+                        <li><strong>0</strong> - Неизвестно/Другое</li>
+                        <li><strong>1</strong> - Ясно</li>
+                        <li><strong>2</strong> - Облачно</li>
+                        <li><strong>3</strong> - Дождь</li>
+                        <li><strong>4</strong> - Снег</li>
+                        <li><strong>5</strong> - Туман</li>
+                    </ul>
+                </div>
+                <div style="flex: 1; min-width: 300px; margin: 10px;">
+                    <h4 style="color: #28a745; margin-bottom: 10px;">🛣️ Коды дороги:</h4>
+                    <ul style="margin: 0; padding-left: 20px;">
+                        <li><strong>0</strong> - Неизвестно/Другое</li>
+                        <li><strong>1</strong> - Сухая</li>
+                        <li><strong>2</strong> - Мокрая</li>
+                        <li><strong>3</strong> - Скользкая</li>
+                        <li><strong>4</strong> - Снежная</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
         <div th:if="${accidents == null or accidents.empty}" class="no-data">
             <h3>📋 Данные отсутствуют</h3>
             <p>В базе данных пока нет записей об авариях.</p>
@@ -151,7 +179,7 @@
                     <td class="dead-count" th:text="${accident.deadCount}">0</td>
                     <td th:text="${accident.weather != null ? accident.weather : 'N/A'}">0</td>
                     <td th:text="${accident.road != null ? accident.road : 'N/A'}">0</td>
-                    <td>-</td>
+                    <td th:text="${accident.driverList.size() != null ? accident.driverList.size() : 'N/A'}">-</td>
                 </tr>
             </tbody>
         </table>

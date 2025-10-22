@@ -40,9 +40,14 @@ public class GeoJsonParserService {
         this.objectMapper.registerModule(new JavaTimeModule());
     }
 
+    public boolean hasDataInDatabase() {
+        long accidentCount = accidentRepository.count();
+        long driverCount = driverRepository.count();
+        return accidentCount > 0 || driverCount > 0;
+    }
+
     public int parseAndSaveGeoJson() throws IOException {
         ClassPathResource resource = new ClassPathResource("sankt-peterburg.geojson");
-        
         // Читаем GeoJSON как Map для получения features
         Map<String, Object> geoJson = objectMapper.readValue(resource.getInputStream(), Map.class);
         List<Map<String, Object>> features = (List<Map<String, Object>>) geoJson.get("features");
@@ -174,3 +179,4 @@ public class GeoJsonParserService {
         }
     }
 }
+

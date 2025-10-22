@@ -7,3 +7,4 @@ import ru.saltis.Time_Weather_SPB_DTP.models.Driver;
 @Repository
 public interface DriverRepository extends JpaRepository<Driver, Long> {
 }
+

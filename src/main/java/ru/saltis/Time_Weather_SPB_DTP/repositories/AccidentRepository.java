@@ -7,3 +7,4 @@ import ru.saltis.Time_Weather_SPB_DTP.models.Accident;
 @Repository
 public interface AccidentRepository extends JpaRepository<Accident, Long> {
 }
+
