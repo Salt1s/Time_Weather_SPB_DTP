@@ -6,178 +6,355 @@
     <title>Список водителей</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+        * {
             margin: 0;
-            padding: 20px;
+            padding: 0;
+            box-sizing: border-box;
         }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background-color: #fff;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-        h1 {
-            color: #333;
-            margin-bottom: 30px;
-            text-align: center;
-        }
-        .stats {
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
             display: flex;
-            justify-content: space-around;
-            margin-bottom: 30px;
-            padding: 20px;
-            background-color: #f8f9fa;
-            border-radius: 8px;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            color: #2d3748;
         }
-        .stat-item {
+
+        .page-wrapper {
+            width: 100%;
+            max-width: 1100px;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 28px;
+            box-shadow: 0 24px 60px rgba(45, 55, 72, 0.35);
+            padding: 48px 52px;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
             text-align: center;
+            margin-bottom: 36px;
         }
-        .stat-number {
-            font-size: 2em;
-            font-weight: bold;
-            color: #007bff;
+
+        .header .icon {
+            font-size: 60px;
+            margin-bottom: 12px;
         }
-        .stat-label {
-            color: #666;
-            margin-top: 5px;
+
+        .header h1 {
+            font-size: 34px;
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 8px;
         }
-        table {
+
+        .header p {
+            color: #718096;
+            font-size: 16px;
+        }
+
+        .alert {
+            border-radius: 18px;
+            padding: 18px 24px;
+            margin-bottom: 24px;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        .alert-error {
+            background: #fff5f5;
+            border-left: 4px solid #f56565;
+            color: #742a2a;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 18px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            border-radius: 20px;
+            padding: 22px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+        }
+
+        .stat-card span {
+            font-size: 14px;
+            color: inherit;
+            letter-spacing: 0.4px;
+            text-transform: uppercase;
+        }
+
+        .stat-card strong {
+            font-size: 30px;
+            color: inherit;
+        }
+
+        .stat-card small {
+            font-size: 12px;
+            color: #4a5568;
+            text-transform: none;
+        }
+
+        .stat-card.accent {
+            background: linear-gradient(135deg, rgba(230, 255, 250, 0.9) 0%, rgba(129, 230, 217, 0.95) 100%);
+            color: #234e52;
+        }
+
+        .stat-card.accent-pink {
+            background: linear-gradient(135deg, rgba(252, 231, 243, 0.95) 0%, rgba(244, 114, 182, 0.9) 100%);
+            color: #702459;
+        }
+
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 14px;
+            margin-bottom: 34px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 14px 30px;
+            border: none;
+            border-radius: 18px;
+            font-size: 15px;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+            color: #1a202c;
+            background: #edf2f7;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 16px 30px rgba(100, 116, 139, 0.25);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #f6ad55 0%, #f97316 100%);
+            color: white;
+        }
+
+        .btn-ghost {
+            background: rgba(255, 255, 255, 0.85);
+            color: #4a5568;
+        }
+
+        .minimal-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 22px;
+            overflow: hidden;
         }
-        th, td {
-            padding: 12px;
+
+        .minimal-table thead {
+            background: #eef2ff;
+            color: #4c51bf;
+            letter-spacing: 0.6px;
+            font-size: 13px;
+            text-transform: uppercase;
+        }
+
+        .minimal-table th,
+        .minimal-table td {
+            padding: 18px 22px;
             text-align: left;
-            border-bottom: 1px solid #ddd;
+            border-bottom: 1px solid rgba(226, 232, 240, 0.7);
+            color: #2d3748;
         }
-        th {
-            background-color: #f8f9fa;
-            font-weight: bold;
-            color: #333;
+
+        .minimal-table tbody tr:last-child td {
+            border-bottom: none;
         }
-        tr:hover {
-            background-color: #f5f5f5;
+
+        .minimal-table tbody tr:hover {
+            background: rgba(102, 126, 234, 0.08);
         }
-        .btn {
-            display: inline-block;
-            background-color: #007bff;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 5px;
-            text-decoration: none;
-            font-size: 16px;
-            transition: background-color 0.3s ease;
-            margin: 10px 5px;
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 8px 14px;
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: 600;
+            background: #e2e8f0;
+            color: #2d3748;
         }
-        .btn:hover {
-            background-color: #0056b3;
+
+        .badge-male {
+            background: rgba(99, 179, 237, 0.18);
+            color: #2b6cb0;
         }
-        .btn-secondary {
-            background-color: #6c757d;
+
+        .badge-female {
+            background: rgba(244, 114, 182, 0.2);
+            color: #b83280;
         }
-        .btn-secondary:hover {
-            background-color: #5a6268;
-        }
-        .btn-danger {
-            background-color: #dc3545;
-        }
-        .btn-danger:hover {
-            background-color: #c82333;
-        }
-        .gender-male {
-            color: #007bff;
-            font-weight: bold;
-        }
-        .gender-female {
-            color: #e83e8c;
-            font-weight: bold;
-        }
+
         .experience {
-            font-family: monospace;
-            background-color: #f8f9fa;
-            padding: 2px 6px;
-            border-radius: 3px;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 14px;
+            background: rgba(237, 242, 247, 0.9);
+            padding: 6px 12px;
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
         }
-        .accident-link {
-            color: #007bff;
-            text-decoration: none;
-        }
-        .accident-link:hover {
-            text-decoration: underline;
-        }
-        .no-data {
+
+        .empty-state {
             text-align: center;
-            color: #666;
-            font-style: italic;
-            padding: 40px;
+            padding: 46px 24px;
+            background: rgba(237, 242, 247, 0.6);
+            border-radius: 22px;
+        }
+
+        .empty-state h3 {
+            font-size: 20px;
+            margin-bottom: 12px;
+            color: #2d3748;
+        }
+
+        .empty-state p {
+            color: #718096;
+            margin-bottom: 16px;
+        }
+
+        @media (max-width: 992px) {
+            .glass-card {
+                padding: 36px 28px;
+            }
+
+            .minimal-table th,
+            .minimal-table td {
+                padding: 16px 18px;
+            }
+        }
+
+        @media (max-width: 720px) {
+            .actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>👥 Список водителей</h1>
-        
-        <div th:if="${error != null}" style="background-color: #f8d7da; color: #721c24; padding: 15px; border-radius: 5px; margin-bottom: 20px;">
+<div class="page-wrapper">
+    <div class="glass-card">
+        <div class="header">
+            <div class="icon">👥</div>
+            <h1>Список водителей</h1>
+            <p>Информация об участниках ДТП и их водительском стаже</p>
+        </div>
+
+        <div th:if="${error != null}" class="alert alert-error">
             <strong>Ошибка:</strong> <span th:text="${error}"></span>
         </div>
-        
-        <div class="stats" th:if="${drivers != null and !drivers.empty}">
-            <div class="stat-item">
-                <div class="stat-number" th:text="${#lists.size(drivers)}">0</div>
-                <div class="stat-label">Всего водителей</div>
+
+        <div class="stats-grid" th:if="${hasDrivers}">
+            <div class="stat-card">
+                <span>Всего водителей</span>
+                <strong th:text="${totalDrivers}">0</strong>
             </div>
-            <div class="stat-item">
-                <div class="stat-number" th:text="${#lists.size(drivers.?[gender == 'Мужской'])}">0</div>
-                <div class="stat-label">Мужчин</div>
+            <div class="stat-card accent">
+                <span>Мужчин</span>
+                <strong th:text="${maleDrivers}">0</strong>
             </div>
-            <div class="stat-item">
-                <div class="stat-number" th:text="${#lists.size(drivers.?[gender == 'Женский'])}">0</div>
-                <div class="stat-label">Женщин</div>
+            <div class="stat-card accent-pink">
+                <span>Женщин</span>
+                <strong th:text="${femaleDrivers}">0</strong>
+            </div>
+            <div class="stat-card">
+                <span>Средний стаж</span>
+                <strong th:text="${#numbers.formatDecimal(averageExperience, 1, 1)}">0.0</strong>
+                <small>лет</small>
             </div>
         </div>
 
-        <div style="text-align: center; margin-bottom: 20px;">
-            <a th:href="@{/accidents}" class="btn btn-danger">🚗 Список аварий</a>
-            <a th:href="@{/geojson}" class="btn">📄 Парсинг GeoJSON</a>
-            <a th:href="@{/}" class="btn btn-secondary">🏠 На главную</a>
+        <div class="actions">
+            <a th:href="@{/accidents}" class="btn btn-secondary">🚗 Перейти к авариям</a>
+            <a th:href="@{/geojson}" class="btn btn-primary">📄 Парсинг GeoJSON</a>
+            <a th:href="@{/}" class="btn btn-ghost">🏠 На главную</a>
         </div>
 
-        <div th:if="${drivers == null or drivers.empty}" class="no-data">
-            <h3>📋 Данные отсутствуют</h3>
-            <p>В базе данных пока нет записей о водителях.</p>
-            <p>Попробуйте запустить парсинг GeoJSON файла для загрузки данных.</p>
-            <a th:href="@{/geojson}" class="btn">🚀 Запустить парсинг</a>
+        <div th:if="${!hasDrivers}" class="empty-state">
+            <h3>Записей о водителях пока нет</h3>
+            <p>После парсинга GeoJSON появится информация по участникам ДТП.</p>
+            <a th:href="@{/geojson}" class="btn btn-primary" style="margin-top: 14px;">🚀 Запустить парсинг</a>
         </div>
 
-        <table th:if="${drivers != null and !drivers.empty}">
+        <table class="minimal-table" th:if="${hasDrivers}">
             <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Пол</th>
-                    <th>Стаж вождения (лет)</th>
-                    <th>ID аварии</th>
-                </tr>
+            <tr>
+                <th>ID</th>
+                <th>Пол</th>
+                <th>Стаж (лет)</th>
+                <th>ID аварии</th>
+            </tr>
             </thead>
             <tbody>
-                <tr th:each="driver : ${drivers}">
-                    <td th:text="${driver.id}">1</td>
-                    <td>
-                        <span th:if="${driver.gender == 'Мужской'}" class="gender-male">👨 Мужской</span>
-                        <span th:if="${driver.gender == 'Женский'}" class="gender-female">👩 Женский</span>
-                        <span th:if="${driver.gender != 'Мужской' and driver.gender != 'Женский'}" th:text="${driver.gender}">Неизвестно</span>
-                    </td>
-                    <td>
-                        <span class="experience" th:text="${driver.yearsExp}">0</span>
-                    </td>
-                    <td th:text="${driver.getAccident.getId() != null ? driver.getAccident.getId() : 'N/A'}">-</td>
-                </tr>
+            <tr th:each="driver : ${drivers}">
+                <td th:text="${driver.id}">1</td>
+                <td>
+                    <span th:if="${'Мужской'.equalsIgnoreCase(driver.gender)}" class="badge badge-male">👨 Мужской</span>
+                    <span th:if="${'Женский'.equalsIgnoreCase(driver.gender)}" class="badge badge-female">👩 Женский</span>
+                    <span th:if="${driver.gender == null or (!'Мужской'.equalsIgnoreCase(driver.gender) and !'Женский'.equalsIgnoreCase(driver.gender))}" class="badge" th:text="${driver.gender != null ? driver.gender : 'Неизвестно'}">Неизвестно</span>
+                </td>
+                <td>
+                    <span class="experience">
+                        ⏱
+                        <span th:text="${driver.yearsExp != null ? driver.yearsExp : '0'}">0</span>
+                    </span>
+                </td>
+                <td>
+                    <span class="badge" th:text="${driver.accident != null ? driver.accident.id : '—'}">—</span>
+                </td>
+            </tr>
             </tbody>
         </table>
     </div>
+</div>
 </body>
 </html>

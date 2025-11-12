@@ -17,6 +17,7 @@ import ru.saltis.Time_Weather_SPB_DTP.repositories.AccidentRepository;
 import ru.saltis.Time_Weather_SPB_DTP.repositories.DriverRepository;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -47,10 +48,24 @@ public class GeoJsonParserService {
     }
 
     public int parseAndSaveGeoJson() throws IOException {
+        if (hasDataInDatabase()) {
+            throw new IllegalStateException("База данных уже содержит данные. Очистите её перед повторным импортом.");
+        }
         ClassPathResource resource = new ClassPathResource("sankt-peterburg.geojson");
+        return parseAndSaveGeoJson(resource.getInputStream());
+    }
+    
+    public int parseAndSaveGeoJson(InputStream inputStream) throws IOException {
+        if (hasDataInDatabase()) {
+            throw new IllegalStateException("База данных уже содержит данные. Очистите её перед повторным импортом.");
+        }
         // Читаем GeoJSON как Map для получения features
-        Map<String, Object> geoJson = objectMapper.readValue(resource.getInputStream(), Map.class);
+        Map<String, Object> geoJson = objectMapper.readValue(inputStream, Map.class);
         List<Map<String, Object>> features = (List<Map<String, Object>>) geoJson.get("features");
+        
+        if (features == null) {
+            throw new IOException("GeoJSON файл не содержит features");
+        }
         
         int importedCount = 0;
         for (Map<String, Object> featureMap : features) {
@@ -70,6 +85,12 @@ public class GeoJsonParserService {
         }
         
         return importedCount;
+    }
+    
+    @Transactional
+    public void clearDatabase() {
+        driverRepository.truncateTable();
+        accidentRepository.truncateTable();
     }
 
     private Accident createAccidentFromGeoJson(GeoJsonFeature feature) {

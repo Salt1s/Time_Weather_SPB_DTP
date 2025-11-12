@@ -6,183 +6,422 @@
     <title>Список аварий</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+        * {
             margin: 0;
-            padding: 20px;
+            padding: 0;
+            box-sizing: border-box;
         }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background-color: #fff;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-        h1 {
-            color: #333;
-            margin-bottom: 30px;
-            text-align: center;
-        }
-        .stats {
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
             display: flex;
-            justify-content: space-around;
-            margin-bottom: 30px;
-            padding: 20px;
-            background-color: #f8f9fa;
-            border-radius: 8px;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            color: #2d3748;
         }
-        .stat-item {
+
+        .page-wrapper {
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 28px;
+            box-shadow: 0 24px 60px rgba(45, 55, 72, 0.35);
+            padding: 48px 52px;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
             text-align: center;
+            margin-bottom: 36px;
         }
-        .stat-number {
-            font-size: 2em;
-            font-weight: bold;
-            color: #dc3545;
+
+        .header .icon {
+            font-size: 60px;
+            margin-bottom: 12px;
         }
-        .stat-label {
-            color: #666;
-            margin-top: 5px;
+
+        .header h1 {
+            font-size: 34px;
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 8px;
         }
-        table {
+
+        .header p {
+            color: #718096;
+            font-size: 16px;
+        }
+
+        .alert {
+            border-radius: 18px;
+            padding: 18px 24px;
+            margin-bottom: 24px;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        .alert-error {
+            background: #fff5f5;
+            border-left: 4px solid #f56565;
+            color: #742a2a;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 18px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            border-radius: 20px;
+            padding: 22px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+        }
+
+        .stat-card span {
+            font-size: 14px;
+            color: inherit;
+            letter-spacing: 0.4px;
+            text-transform: uppercase;
+        }
+
+        .stat-card strong {
+            font-size: 30px;
+            color: inherit;
+        }
+
+        .stat-card small {
+            font-size: 12px;
+            color: #4a5568;
+            text-transform: none;
+        }
+
+        .stat-card.accent-danger {
+            background: linear-gradient(135deg, rgba(254, 215, 215, 0.95) 0%, rgba(252, 165, 165, 0.95) 100%);
+            color: #742a2a;
+        }
+
+        .stat-card.accent-info {
+            background: linear-gradient(135deg, rgba(237, 242, 247, 0.95) 0%, rgba(226, 232, 240, 0.9) 100%);
+        }
+
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 14px;
+            margin-bottom: 34px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 14px 30px;
+            border: none;
+            border-radius: 18px;
+            font-size: 15px;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+            color: #1a202c;
+            background: #edf2f7;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 16px 30px rgba(100, 116, 139, 0.25);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #4fd1c5 0%, #63b3ed 100%);
+            color: white;
+        }
+
+        .btn-ghost {
+            background: rgba(255, 255, 255, 0.85);
+            color: #4a5568;
+        }
+
+        .legend-card {
+            background: rgba(247, 250, 252, 0.9);
+            border-radius: 22px;
+            padding: 26px;
+            margin-bottom: 26px;
+        }
+
+        .legend-card h3 {
+            margin-bottom: 14px;
+            font-size: 18px;
+            color: #2d3748;
+        }
+
+        .legend-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 18px;
+        }
+
+        .legend-section h4 {
+            font-size: 15px;
+            color: #4a5568;
+            margin-bottom: 10px;
+        }
+
+        .legend-section ul {
+            list-style: none;
+            color: #718096;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .minimal-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 22px;
+            overflow: hidden;
         }
-        th, td {
-            padding: 12px;
+
+        .minimal-table thead {
+            background: #eef2ff;
+            color: #4c51bf;
+            letter-spacing: 0.6px;
+            font-size: 13px;
+            text-transform: uppercase;
+        }
+
+        .minimal-table th,
+        .minimal-table td {
+            padding: 18px 22px;
             text-align: left;
-            border-bottom: 1px solid #ddd;
+            border-bottom: 1px solid rgba(226, 232, 240, 0.7);
+            color: #2d3748;
         }
-        th {
-            background-color: #f8f9fa;
-            font-weight: bold;
-            color: #333;
+
+        .minimal-table tbody tr:last-child td {
+            border-bottom: none;
         }
-        tr:hover {
-            background-color: #f5f5f5;
+
+        .minimal-table tbody tr:hover {
+            background: rgba(102, 126, 234, 0.08);
         }
-        .btn {
-            display: inline-block;
-            background-color: #007bff;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 5px;
-            text-decoration: none;
-            font-size: 16px;
-            transition: background-color 0.3s ease;
-            margin: 10px 5px;
-        }
-        .btn:hover {
-            background-color: #0056b3;
-        }
-        .btn-secondary {
-            background-color: #6c757d;
-        }
-        .btn-secondary:hover {
-            background-color: #5a6268;
-        }
-        .btn-success {
-            background-color: #28a745;
-        }
-        .btn-success:hover {
-            background-color: #218838;
-        }
+
         .datetime {
-            font-family: monospace;
-            font-size: 0.9em;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 14px;
+            color: #4a5568;
         }
-        .dead-count {
-            font-weight: bold;
-            color: #dc3545;
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 46px;
+            padding: 8px 14px;
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: 600;
+            background: #e2e8f0;
+            color: #2d3748;
         }
-        .no-data {
+
+        .badge-danger {
+            background: rgba(252, 129, 129, 0.18);
+            color: #c53030;
+        }
+
+        .empty-state {
             text-align: center;
-            color: #666;
-            font-style: italic;
-            padding: 40px;
+            padding: 46px 24px;
+            background: rgba(237, 242, 247, 0.6);
+            border-radius: 22px;
+        }
+
+        .empty-state h3 {
+            font-size: 20px;
+            margin-bottom: 12px;
+            color: #2d3748;
+        }
+
+        .empty-state p {
+            color: #718096;
+            margin-bottom: 16px;
+        }
+
+        @media (max-width: 992px) {
+            .glass-card {
+                padding: 36px 28px;
+            }
+
+            .minimal-table th,
+            .minimal-table td {
+                padding: 16px 18px;
+            }
+        }
+
+        @media (max-width: 720px) {
+            .actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+
+            .legend-card {
+                padding: 22px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>🚗 Список аварий</h1>
-        
-        <div th:if="${error != null}" style="background-color: #f8d7da; color: #721c24; padding: 15px; border-radius: 5px; margin-bottom: 20px;">
+<div class="page-wrapper">
+    <div class="glass-card">
+        <div class="header">
+            <div class="icon">🚗</div>
+            <h1>Список аварий</h1>
+            <p>Сводка загруженных ДТП и их ключевых параметров</p>
+        </div>
+
+        <div th:if="${error != null}" class="alert alert-error">
             <strong>Ошибка:</strong> <span th:text="${error}"></span>
         </div>
-        
-        <div class="stats" th:if="${accidents != null and !accidents.empty}">
-            <div class="stat-item">
-                <div class="stat-number" th:text="${#lists.size(accidents)}">0</div>
-                <div class="stat-label">Всего аварий</div>
+
+        <div class="stats-grid" th:if="${hasAccidents}">
+            <div class="stat-card">
+                <span>Всего аварий</span>
+                <strong th:text="${totalAccidents}">0</strong>
+            </div>
+            <div class="stat-card accent-danger">
+                <span>С погибшими</span>
+                <strong th:text="${fatalAccidents}">0</strong>
+            </div>
+            <div class="stat-card accent-info">
+                <span>Без погибших</span>
+                <strong th:text="${nonFatalAccidents}">0</strong>
+            </div>
+            <div class="stat-card">
+                <span>Всего погибших</span>
+                <strong th:text="${totalVictims}">0</strong>
+            </div>
+            <div class="stat-card">
+                <span>Участие водителей</span>
+                <strong th:text="${totalDrivers}">0</strong>
+                <small th:text="'Аварий с данными о водителях: ' + ${accidentsWithDrivers}">Аварий с данными о водителях: 0</small>
             </div>
         </div>
 
-        <div style="text-align: center; margin-bottom: 20px;">
-            <a th:href="@{/drivers}" class="btn btn-success">👥 Список водителей</a>
-            <a th:href="@{/geojson}" class="btn">📄 Парсинг GeoJSON</a>
-            <a th:href="@{/}" class="btn btn-secondary">🏠 На главную</a>
+        <div class="actions">
+            <a th:href="@{/drivers}" class="btn btn-secondary">👥 Перейти к водителям</a>
+            <a th:href="@{/geojson}" class="btn btn-primary">📄 Парсинг GeoJSON</a>
+            <a th:href="@{/}" class="btn btn-ghost">🏠 На главную</a>
         </div>
 
-        <!-- Расшифровки кодов -->
-        <div th:if="${accidents != null and !accidents.empty}" style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
-            <h3 style="margin-top: 0; color: #333; text-align: center;">📋 Расшифровка кодов</h3>
-            <div style="display: flex; justify-content: space-around; flex-wrap: wrap;">
-                <div style="flex: 1; min-width: 300px; margin: 10px;">
-                    <h4 style="color: #007bff; margin-bottom: 10px;">🌤️ Коды погоды:</h4>
-                    <ul style="margin: 0; padding-left: 20px;">
-                        <li><strong>0</strong> - Неизвестно/Другое</li>
-                        <li><strong>1</strong> - Ясно</li>
-                        <li><strong>2</strong> - Облачно</li>
-                        <li><strong>3</strong> - Дождь</li>
-                        <li><strong>4</strong> - Снег</li>
-                        <li><strong>5</strong> - Туман</li>
-                    </ul>
-                </div>
-                <div style="flex: 1; min-width: 300px; margin: 10px;">
-                    <h4 style="color: #28a745; margin-bottom: 10px;">🛣️ Коды дороги:</h4>
-                    <ul style="margin: 0; padding-left: 20px;">
-                        <li><strong>0</strong> - Неизвестно/Другое</li>
-                        <li><strong>1</strong> - Сухая</li>
-                        <li><strong>2</strong> - Мокрая</li>
-                        <li><strong>3</strong> - Скользкая</li>
-                        <li><strong>4</strong> - Снежная</li>
-                    </ul>
+        <div th:if="${!hasAccidents}" class="empty-state">
+            <h3>Записей об авариях пока нет</h3>
+            <p>Импортируйте GeoJSON, чтобы увидеть статистику ДТП.</p>
+            <a th:href="@{/geojson}" class="btn btn-primary" style="margin-top: 14px;">🚀 Запустить парсинг</a>
+        </div>
+
+        <div th:if="${hasAccidents}">
+            <div class="legend-card">
+                <h3>Расшифровка кодов</h3>
+                <div class="legend-grid">
+                    <div class="legend-section">
+                        <h4>🌤️ Погодные условия</h4>
+                        <ul>
+                            <li><strong>0</strong> — Неизвестно / другое</li>
+                            <li><strong>1</strong> — Ясно</li>
+                            <li><strong>2</strong> — Облачно</li>
+                            <li><strong>3</strong> — Дождь</li>
+                            <li><strong>4</strong> — Снег</li>
+                            <li><strong>5</strong> — Туман</li>
+                        </ul>
+                    </div>
+                    <div class="legend-section">
+                        <h4>🛣️ Состояние дороги</h4>
+                        <ul>
+                            <li><strong>0</strong> — Неизвестно / другое</li>
+                            <li><strong>1</strong> — Сухая</li>
+                            <li><strong>2</strong> — Мокрая</li>
+                            <li><strong>3</strong> — Скользкая</li>
+                            <li><strong>4</strong> — Снежная</li>
+                        </ul>
+                    </div>
+                    <div class="legend-section">
+                        <h4>🧾 Дополнительно</h4>
+                        <ul>
+                            <li><strong>С погибшими</strong> — `dead_count &gt; 0`</li>
+                            <li><strong>Участники</strong> — количество связанных водителей</li>
+                            <li><strong>Дата и время</strong> — момент происшествия</li>
+                        </ul>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div th:if="${accidents == null or accidents.empty}" class="no-data">
-            <h3>📋 Данные отсутствуют</h3>
-            <p>В базе данных пока нет записей об авариях.</p>
-            <p>Попробуйте запустить парсинг GeoJSON файла для загрузки данных.</p>
-            <a th:href="@{/geojson}" class="btn">🚀 Запустить парсинг</a>
-        </div>
-
-        <table th:if="${accidents != null and !accidents.empty}">
-            <thead>
+            <table class="minimal-table">
+                <thead>
                 <tr>
                     <th>ID</th>
                     <th>Дата и время</th>
-                    <th>Количество погибших</th>
-                    <th>Код погоды</th>
-                    <th>Код дороги</th>
-                    <th>Водители</th>
+                    <th>Погибшие</th>
+                    <th>Погода</th>
+                    <th>Дорога</th>
+                    <th>Водителей</th>
                 </tr>
-            </thead>
-            <tbody>
+                </thead>
+                <tbody>
                 <tr th:each="accident : ${accidents}">
                     <td th:text="${accident.id}">1</td>
-                    <td class="datetime" th:text="${accident.datetime}">01.01.2024 12:00</td>
-                    <td class="dead-count" th:text="${accident.deadCount}">0</td>
-                    <td th:text="${accident.weather != null ? accident.weather : 'N/A'}">0</td>
-                    <td th:text="${accident.road != null ? accident.road : 'N/A'}">0</td>
-                    <td th:text="${accident.driverList.size() != null ? accident.driverList.size() : 'N/A'}">-</td>
+                    <td class="datetime" th:text="${accident.datetime}">2024-01-01T12:00</td>
+                    <td>
+                        <span class="badge badge-danger" th:text="${accident.deadCount != null ? accident.deadCount : 0}">0</span>
+                    </td>
+                    <td>
+                        <span class="badge" th:text="${accident.weather != null ? accident.weather : '—'}">0</span>
+                    </td>
+                    <td>
+                        <span class="badge" th:text="${accident.road != null ? accident.road : '—'}">0</span>
+                    </td>
+                    <td>
+                        <span class="badge" th:text="${driverCounts[accident.id] != null ? driverCounts[accident.id] : 0}">0</span>
+                    </td>
                 </tr>
-            </tbody>
-        </table>
+                </tbody>
+            </table>
+        </div>
     </div>
+</div>
 </body>
 </html>

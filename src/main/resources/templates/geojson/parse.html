@@ -1,82 +1,459 @@
 <!DOCTYPE html>
-<html lang="ru" xmlns:th="http://www.w3.org/1999/xhtml">
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Парсинг GeoJSON</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <style>
-        .parse-section {
-            border: 1px solid #ddd;
-            border-radius: 8px;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             padding: 20px;
-            margin: 20px 0;
-            background: white;
+            color: #333;
+        }
+
+        .parse-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 700px;
+            width: 100%;
+            padding: 50px 40px;
             text-align: center;
+            animation: fadeIn 0.6s ease-out;
         }
-        .btn {
-            background: #007bff;
-            color: white;
-            padding: 15px 30px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logo {
+            font-size: 64px;
+            margin-bottom: 20px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        h1 {
+            font-size: 32px;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 12px;
+            line-height: 1.2;
+        }
+
+        .subtitle {
             font-size: 16px;
-            margin: 10px;
+            color: #718096;
+            margin-bottom: 40px;
+            line-height: 1.6;
         }
-        .btn:hover {
-            background: #0056b3;
+
+        .info-card {
+            background: #f7fafc;
+            border-left: 4px solid #667eea;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: left;
         }
-        .btn-warning {
-            background: #ffc107;
-            color: #000;
+
+        .info-card h3 {
+            font-size: 18px;
+            color: #2d3748;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
-        .btn-warning:hover {
-            background: #e0a800;
+
+        .info-card p {
+            font-size: 14px;
+            color: #4a5568;
+            line-height: 1.6;
         }
-        .info-box {
-            background: #f8f9fa;
-            border: 1px solid #dee2e6;
-            border-radius: 4px;
-            padding: 15px;
-            margin: 20px 0;
+
+        .file-upload-section {
+            margin: 30px 0;
+            padding: 30px;
+            background: #f7fafc;
+            border-radius: 16px;
+            border: 2px dashed #cbd5e0;
+            transition: all 0.3s ease;
         }
+
+        .file-upload-section:hover {
+            border-color: #667eea;
+            background: #edf2f7;
+        }
+
+        .file-upload-label {
+            display: block;
+            cursor: pointer;
+            padding: 20px;
+            border-radius: 12px;
+            background: white;
+            border: 2px solid #e2e8f0;
+            transition: all 0.3s ease;
+            margin-bottom: 15px;
+        }
+
+        .file-upload-label:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .file-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+
+        .file-text {
+            font-size: 16px;
+            color: #4a5568;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .file-hint {
+            font-size: 14px;
+            color: #a0aec0;
+        }
+
+        .selected-file {
+            margin-top: 15px;
+            padding: 12px;
+            background: #e6fffa;
+            border: 1px solid #4ecdc4;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #234e52;
+            display: none;
+        }
+
+        .selected-file.show {
+            display: block;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 30px 0;
+            color: #a0aec0;
+            font-size: 14px;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #e2e8f0;
+        }
+
+        .divider span {
+            padding: 0 15px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 14px 32px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            margin: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(255, 107, 107, 0.3);
+        }
+
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+
+        .btn-secondary:hover {
+            background: #cbd5e0;
+            transform: translateY(-2px);
+        }
+
         .warning-box {
-            background: #fff3cd;
-            border: 1px solid #ffeaa7;
-            border-radius: 4px;
-            padding: 15px;
+            background: #fff5f5;
+            border-left: 4px solid #fc8181;
+            border-radius: 12px;
+            padding: 16px;
             margin: 20px 0;
-            color: #856404;
+            text-align: left;
+        }
+
+        .warning-box h4 {
+            font-size: 16px;
+            color: #c53030;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .warning-box p {
+            font-size: 14px;
+            color: #742a2a;
+            line-height: 1.6;
+        }
+
+        .success-box {
+            background: #f0fff4;
+            border-left: 4px solid #48bb78;
+            border-radius: 12px;
+            padding: 16px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .success-box p {
+            font-size: 14px;
+            color: #22543d;
+            line-height: 1.6;
+        }
+
+        .error-box {
+            background: #fff5f5;
+            border-left: 4px solid #fc8181;
+            border-radius: 12px;
+            padding: 16px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .error-box p {
+            font-size: 14px;
+            color: #742a2a;
+            line-height: 1.6;
+        }
+
+        .actions {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .actions-row {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        @media (max-width: 768px) {
+            .parse-container {
+                padding: 30px 24px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .logo {
+                font-size: 48px;
+            }
+
+            .actions-row {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Парсинг GeoJSON файла</h1>
-        
-        <div class="info-box">
-            <h3>📁 Файл: sankt-peterburg.geojson</h3>
-            <p>Этот файл содержит данные о дорожно-транспортных происшествиях в Санкт-Петербурге.</p>
+    <div class="parse-container">
+        <div class="logo">📄</div>
+        <h1>Парсинг GeoJSON</h1>
+        <p class="subtitle">Загрузите файл GeoJSON или используйте встроенный файл</p>
+
+        <!-- Сообщения об успехе или ошибке -->
+        <div th:if="${success != null}" class="success-box">
+            <p th:text="${success}"></p>
         </div>
-        
-        <div class="warning-box">
+
+        <div th:if="${error != null}" class="error-box">
+            <p th:text="${error}"></p>
+        </div>
+
+        <!-- Информация о встроенном файле -->
+        <div class="info-card">
+            <h3>📁 Встроенный файл</h3>
+            <p><strong>sankt-peterburg.geojson</strong> - содержит данные о дорожно-транспортных происшествиях в Санкт-Петербурге. 
+            Файл будет использован по умолчанию, если вы не загрузите свой файл.</p>
+        </div>
+
+        <!-- Предупреждение о большом файле -->
+        <div class="warning-box" th:if="${!hasData}">
             <h4>⚠️ Внимание!</h4>
-            <p>Файл очень большой и содержит тысячи записей. Парсинг может занять некоторое время.</p>
+            <p>Файл может быть очень большим и содержать тысячи записей. Парсинг может занять некоторое время.</p>
         </div>
-        
-        <div class="parse-section">
-            <h2>Начать парсинг GeoJSON файла</h2>
-            <p>Это действие загрузит все данные о ДТП из GeoJSON файла в базу данных.</p>
-            
-            <form th:action="@{/geojson/parse}" method="post">
-                <button type="submit" class="btn btn-warning">🚀 Начать парсинг</button>
+
+        <!-- Форма загрузки и парсинга -->
+        <form th:action="@{/geojson/parse}" method="post" enctype="multipart/form-data" id="parseForm">
+            <!-- Загрузка пользовательского файла -->
+            <div class="file-upload-section">
+                <label for="fileInput" class="file-upload-label">
+                    <div class="file-icon">📤</div>
+                    <div class="file-text">Выберите GeoJSON файл</div>
+                    <div class="file-hint">Или перетащите файл сюда</div>
+                </label>
+                <input type="file" 
+                       id="fileInput" 
+                       name="file" 
+                       class="file-input" 
+                       accept=".geojson,application/geo+json"
+                       onchange="handleFileSelect(this)">
+                <div id="selectedFile" class="selected-file"></div>
+            </div>
+
+            <!-- Разделитель -->
+            <div class="divider">
+                <span>или</span>
+            </div>
+
+            <!-- Информация о парсинге -->
+            <div class="info-card">
+                <h3>ℹ️ Как это работает</h3>
+                <p>Если вы загрузили файл, будет использован он. Если файл не загружен, 
+                будет использован встроенный файл <strong>sankt-peterburg.geojson</strong>.</p>
+            </div>
+
+            <!-- Кнопки действий -->
+            <div class="actions">
+                <div class="actions-row">
+                    <button type="submit" class="btn btn-primary">🚀 Начать парсинг</button>
+                    <a th:href="@{/}" class="btn btn-secondary">🏠 На главную</a>
+                </div>
+            </div>
+        </form>
+
+        <!-- Кнопка очистки БД (показывается только если есть данные) -->
+        <div th:if="${hasData}" style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #e2e8f0;">
+            <form th:action="@{/geojson/clear}" method="post" style="display: inline;">
+                <button type="submit" 
+                        class="btn btn-danger" 
+                        onclick="return confirm('Вы уверены, что хотите очистить базу данных? Все данные будут удалены без возможности восстановления.');">
+                    🗑️ Очистить базу данных
+                </button>
             </form>
         </div>
-        
-        <div style="margin-top: 20px; ">
-            <a href="/" class="btn">На главную</a>
-        </div>
     </div>
+
+    <script>
+        function handleFileSelect(input) {
+            const file = input.files[0];
+            const selectedFileDiv = document.getElementById('selectedFile');
+            
+            if (file) {
+                selectedFileDiv.textContent = '📄 Выбран файл: ' + file.name + ' (' + formatFileSize(file.size) + ')';
+                selectedFileDiv.classList.add('show');
+            } else {
+                selectedFileDiv.classList.remove('show');
+            }
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+        }
+
+        // Обработка drag and drop
+        const fileUploadSection = document.querySelector('.file-upload-section');
+        const fileInput = document.getElementById('fileInput');
+
+        fileUploadSection.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            fileUploadSection.style.borderColor = '#667eea';
+            fileUploadSection.style.background = '#edf2f7';
+        });
+
+        fileUploadSection.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            fileUploadSection.style.borderColor = '#cbd5e0';
+            fileUploadSection.style.background = '#f7fafc';
+        });
+
+        fileUploadSection.addEventListener('drop', (e) => {
+            e.preventDefault();
+            fileUploadSection.style.borderColor = '#cbd5e0';
+            fileUploadSection.style.background = '#f7fafc';
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                const file = files[0];
+                if (file.name.toLowerCase().endsWith('.geojson')) {
+                    fileInput.files = files;
+                    handleFileSelect(fileInput);
+                } else {
+                    alert('Пожалуйста, выберите файл с расширением .geojson');
+                }
+            }
+        });
+    </script>
 </body>
 </html>
-
