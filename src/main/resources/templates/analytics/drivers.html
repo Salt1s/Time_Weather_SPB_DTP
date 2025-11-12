@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Аналитика водителей</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            color: #2d3748;
+        }
+
+        .page-wrapper {
+            width: 100%;
+            max-width: 1000px;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            border-radius: 28px;
+            box-shadow: 0 24px 60px rgba(45, 55, 72, 0.35);
+            padding: 48px 52px;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 36px;
+        }
+
+        .header .icon {
+            font-size: 60px;
+            margin-bottom: 12px;
+        }
+
+        .header h1 {
+            font-size: 34px;
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: #718096;
+            font-size: 16px;
+        }
+
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 14px;
+            margin-bottom: 34px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 14px 30px;
+            border: none;
+            border-radius: 18px;
+            font-size: 15px;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+            color: #1a202c;
+            background: #edf2f7;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 16px 30px rgba(100, 116, 139, 0.25);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #f6ad55 0%, #f97316 100%);
+            color: white;
+        }
+
+        .chart-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+        }
+
+        .chart-card {
+            background: rgba(247, 250, 252, 0.9);
+            border-radius: 24px;
+            padding: 36px 40px;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .chart-card h3 {
+            font-size: 20px;
+            font-weight: 600;
+            color: #2d3748;
+            text-align: center;
+        }
+
+        .chart-wrapper {
+            position: relative;
+            width: 100%;
+            height: 420px;
+        }
+
+        canvas {
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 46px 24px;
+            background: rgba(237, 242, 247, 0.7);
+            border-radius: 22px;
+            margin-top: 24px;
+        }
+
+        .empty-state h3 {
+            font-size: 20px;
+            margin-bottom: 12px;
+            color: #2d3748;
+        }
+
+        .empty-state p {
+            color: #718096;
+            margin-bottom: 16px;
+        }
+
+        @media (max-width: 992px) {
+            .glass-card {
+                padding: 36px 28px;
+            }
+
+            .chart-card {
+                padding: 30px;
+            }
+        }
+
+        @media (max-width: 720px) {
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+</head>
+<body>
+<div class="page-wrapper">
+    <div class="glass-card">
+        <div class="header">
+            <div class="icon">👥</div>
+            <h1>Аналитика по водителям</h1>
+            <p>Распределение участников ДТП по полу и стажу вождения</p>
+        </div>
+
+        <div class="actions">
+            <a th:href="@{/}" class="btn">🏠 На главную</a>
+            <a th:href="@{/analytics/accidents}" class="btn btn-secondary">📊 Аналитика по авариям</a>
+            <a th:href="@{/drivers}" class="btn btn-primary">👥 Просмотр водителей</a>
+        </div>
+
+        <div th:if="${!hasDrivers}" class="empty-state">
+            <h3>Данные о водителях отсутствуют</h3>
+            <p>Импортируйте GeoJSON, чтобы увидеть распределение по участникам ДТП.</p>
+            <a th:href="@{/geojson}" class="btn btn-primary" style="margin-top: 14px;">🚀 Запустить парсинг</a>
+        </div>
+
+        <div class="chart-stack" th:if="${hasDrivers}">
+            <div class="chart-card">
+                <h3>Распределение по полу</h3>
+                <div class="chart-wrapper">
+                    <canvas id="genderChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-card">
+                <h3>Распределение по стажу</h3>
+                <div class="chart-wrapper">
+                    <canvas id="experienceChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:if="${hasDrivers}" th:inline="javascript">
+    Chart.register(ChartDataLabels);
+
+    const genderStats = /*[[${genderStats}]]*/ {};
+    const experienceStats = /*[[${experienceStats}]]*/ {};
+
+    const genderLabels = Object.keys(genderStats);
+    const genderValues = Object.values(genderStats);
+
+    const experienceLabels = Object.keys(experienceStats);
+    const experienceValues = Object.values(experienceStats);
+
+    const pastelPalette = [
+        '#63b3ed', '#f687b3', '#a0aec0', '#4fd1c5', '#f6ad55', '#9f7aea'
+    ];
+
+    const formatPercent = (value, data) => {
+        const total = data.reduce((sum, current) => sum + current, 0);
+        if (total === 0) {
+            return '0%';
+        }
+        const percent = (value / total) * 100;
+        return percent.toFixed(1) + '%';
+    };
+
+    const formatValueWithPercent = (value, data) => {
+        return `${value} (${formatPercent(value, data)})`;
+    };
+
+    new Chart(document.getElementById('genderChart'), {
+        type: 'doughnut',
+        data: {
+            labels: genderLabels,
+            datasets: [{
+                data: genderValues,
+                backgroundColor: ['#63b3ed', '#f687b3', '#a0aec0'],
+                borderWidth: 0,
+                hoverOffset: 8,
+                cutout: '58%'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        color: '#4a5568',
+                        font: { size: 14 }
+                    }
+                },
+                datalabels: {
+                    color: '#2d3748',
+                    font: { weight: '600', size: 14 },
+                    formatter: (value, context) => `${value} (${formatPercent(value, context.dataset.data)})`
+                }
+            }
+        }
+    });
+
+    new Chart(document.getElementById('experienceChart'), {
+        type: 'bar',
+        data: {
+            labels: experienceLabels,
+            datasets: [{
+                data: experienceValues,
+                backgroundColor: experienceLabels.map((_, idx) => pastelPalette[idx % pastelPalette.length]),
+                borderRadius: 20,
+                maxBarThickness: 72
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                datalabels: {
+                    color: '#2d3748',
+                    anchor: 'end',
+                    align: 'end',
+                    offset: -6,
+                    font: { weight: '600', size: 14 },
+                    formatter: (value, context) => formatValueWithPercent(value, context.dataset.data)
+                }
+            },
+            scales: {
+                x: {
+                    ticks: { color: '#4a5568', font: { size: 14 } },
+                    grid: { display: false }
+                },
+                y: {
+                    ticks: { color: '#4a5568', font: { size: 14 } },
+                    grid: { color: 'rgba(226, 232, 240, 0.6)' }
+                }
+            }
+        }
+    });
+</script>
+</body>
+</html>

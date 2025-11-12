@@ -158,6 +158,23 @@
             color: #2d3748;
         }
 
+        .nav-card.analytics-accidents {
+            background: linear-gradient(135deg, #63b3ed 0%, #667eea 100%);
+            color: white;
+        }
+
+        .nav-card.analytics-drivers {
+            background: linear-gradient(135deg, #f687b3 0%, #ed64a6 100%);
+            color: white;
+        }
+
+        .nav-card.analytics-accidents .nav-card-title,
+        .nav-card.analytics-accidents .nav-card-desc,
+        .nav-card.analytics-drivers .nav-card-title,
+        .nav-card.analytics-drivers .nav-card-desc {
+            color: inherit;
+        }
+
         .footer {
             margin-top: 40px;
             padding-top: 30px;
@@ -197,7 +214,7 @@
         
         <div class="description">
             <strong>О проекте:</strong><br>
-            Система для анализа количества дорожных аварий в Санкт-Петербурге за последние 10 лет. 
+            Система для анализа количества дорожных аварий в Санкт-Петербурге и других городах за последние 10 лет.
             Изучайте взаимосвязь между погодными условиями, состоянием дороги и количеством происшествий.
         </div>
 
@@ -219,10 +236,23 @@
                 <div class="nav-card-title">GeoJSON</div>
                 <div class="nav-card-desc">Парсинг и загрузка данных</div>
             </a>
+
+            <a th:href="@{/analytics/accidents}" class="nav-card analytics-accidents">
+                <div class="nav-card-icon">📊</div>
+                <div class="nav-card-title">Аналитика ДТП</div>
+                <div class="nav-card-desc">Диаграммы по времени, погоде и последствиям</div>
+            </a>
+
+            <a th:href="@{/analytics/drivers}" class="nav-card analytics-drivers">
+                <div class="nav-card-icon">📈</div>
+                <div class="nav-card-title">Аналитика водителей</div>
+                <div class="nav-card-desc">Распределение по полу и стажу</div>
+            </a>
+
         </div>
 
         <div class="footer">
-            <p>Система анализа дорожных происшествий © 2024</p>
+            <p>Система анализа дорожных происшествий © 2025</p>
         </div>
     </div>
 </body>

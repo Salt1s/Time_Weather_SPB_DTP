@@ -147,9 +147,10 @@ public class GeoJsonParserService {
         
         String weather = weatherList.get(0).toLowerCase();
         if (weather.contains("ясно")) return 1;
-        if (weather.contains("облачно")) return 2;
+        if (weather.contains("пасмур")) return 2;
         if (weather.contains("дождь")) return 3;
         if (weather.contains("снег")) return 4;
+        if (weather.contains("метел")) return 4;
         if (weather.contains("туман")) return 5;
         return 0; // Другое
     }
@@ -161,9 +162,13 @@ public class GeoJsonParserService {
         
         String road = roadConditions.get(0).toLowerCase();
         if (road.contains("сух")) return 1;
+        if (road.contains("вод")) return 2;
         if (road.contains("мокр")) return 2;
         if (road.contains("скользк")) return 3;
+        if (road.contains("голол")) return 3;
         if (road.contains("снежн")) return 4;
+        if (road.contains("заснеж")) return 4;
+
         return 0; // Другое
     }
 

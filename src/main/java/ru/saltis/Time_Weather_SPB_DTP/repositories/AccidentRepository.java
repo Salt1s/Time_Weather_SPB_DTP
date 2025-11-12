@@ -9,7 +9,7 @@ import ru.saltis.Time_Weather_SPB_DTP.models.Accident;
 @Repository
 public interface AccidentRepository extends JpaRepository<Accident, Long> {
     @Modifying
-    @Query(value = "TRUNCATE TABLE accidents CASCADE", nativeQuery = true)
+    @Query(value = "TRUNCATE TABLE accidents RESTART IDENTITY CASCADE", nativeQuery = true)
     void truncateTable();
 }
 
