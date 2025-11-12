@@ -2,9 +2,9 @@
 
 # Time & Weather · SPB · ДТП
 
-Интерактивная витрина данных ДТП Санкт‑Петербурга: импортируйте GeoJSON, исследуйте сводные таблицы и смотрите живую аналитику по времени суток, погоде, состоянию дороги и профилю водителей.
+Интерактивная витрина данных ДТП Санкт‑Петербурга и других городов: импортируйте GeoJSON, исследуйте сводные таблицы и смотрите живую аналитику по времени суток, погоде, состоянию дороги и профилю водителей.
 
-![Analytics Preview](docs/screens/analytics-preview.png)
+![Analytics Preview](other_files\screenshots\screen1.png)
 
 </div>
 
@@ -55,15 +55,6 @@ docker-compose down
 ### 2. Настройка приложения
 
 Конфигурация по умолчанию в `src/main/resources/application.properties`:
-
-```properties
-spring.datasource.url=jdbc:postgresql://localhost:5432/dtp
-spring.datasource.username=postgres
-spring.datasource.password=postgres
-spring.jpa.hibernate.ddl-auto=update
-spring.jpa.properties.hibernate.format_sql=true
-spring.thymeleaf.cache=false
-```
 
 ### 3. Запуск Spring Boot
 
