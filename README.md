@@ -4,7 +4,7 @@
 
 Интерактивная витрина данных ДТП Санкт‑Петербурга и других городов: импортируйте GeoJSON, исследуйте сводные таблицы и смотрите живую аналитику по времени суток, погоде, состоянию дороги и профилю водителей.
 
-![Analytics Preview](other_files\screenshots\screen1.png)
+![Analytics Preview](other_files/screenshots/screen1.png)
 
 </div>
 
