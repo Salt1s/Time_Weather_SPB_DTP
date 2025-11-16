@@ -40,11 +40,12 @@ src/main/java/ru/saltis/Time_Weather_SPB_DTP
 ### 1. Запуск инфраструктуры
 
 ```bash
-docker-compose up -d
+docker-compose up --build
 ```
 
 - Поднимет PostgreSQL (`localhost:5432`)
 - Данные сохраняются в volume `postgres_data`
+- Собирает приложение и запускает (`localhost:8080`)
 
 Остановка:
 
