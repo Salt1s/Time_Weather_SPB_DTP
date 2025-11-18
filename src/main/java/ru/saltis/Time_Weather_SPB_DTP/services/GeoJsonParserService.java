@@ -1,6 +1,5 @@
 package ru.saltis.Time_Weather_SPB_DTP.services;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -67,6 +67,8 @@ public class GeoJsonParserService {
             throw new IOException("GeoJSON файл не содержит features");
         }
         
+        List<Accident> accidents = new ArrayList<>();
+        List<Driver> drivers = new ArrayList<>();
         int importedCount = 0;
         for (Map<String, Object> featureMap : features) {
             try {
@@ -76,14 +78,22 @@ public class GeoJsonParserService {
                 // Создаем аварию из GeoJSON данных
                 Accident accident = createAccidentFromGeoJson(feature);
                 if (accident != null) {
-                    accidentRepository.save(accident);
+                    accidents.add(accident);
+                    drivers.addAll(createDriverRecords(accident, feature.getProperties()));
                     importedCount++;
                 }
             } catch (Exception e) {
                 System.err.println("Ошибка при обработке записи: " + e.getMessage());
             }
         }
-        
+
+        if (!accidents.isEmpty()) {
+            accidentRepository.saveAll(accidents);
+        }
+        if (!drivers.isEmpty()) {
+            driverRepository.saveAll(drivers);
+        }
+
         return importedCount;
     }
     
@@ -115,10 +125,6 @@ public class GeoJsonParserService {
             accident.setWeather(getWeatherCode(properties.getWeather()));
             accident.setRoad(getRoadCode(properties.getRoadConditions()));
 
-            accident = accidentRepository.save(accident);
-
-            createDriverRecords(accident, properties);
-            
             return accident;
             
         } catch (Exception e) {
@@ -172,17 +178,21 @@ public class GeoJsonParserService {
         return 0; // Другое
     }
 
-    private void createDriverRecords(Accident accident, GeoJsonProperties properties) {
+    private List<Driver> createDriverRecords(Accident accident, GeoJsonProperties properties) {
+        List<Driver> drivers = new ArrayList<>();
+        if (properties == null) {
+            return drivers;
+        }
         // Ищем водителей в участниках
         if (properties.getParticipants() != null) {
             for (GeoJsonParticipant participant : properties.getParticipants()) {
                 if ("Водитель".equals(participant.getRole()) && participant.getGender() != null) {
                     Driver driver = new Driver();
                     driver.setGender(participant.getGender());
-                    driver.setYearsExp(participant.getYearsOfDrivingExperience() != null ? 
+                    driver.setYearsExp(participant.getYearsOfDrivingExperience() != null ?
                         participant.getYearsOfDrivingExperience().toString() : "0");
                     driver.setAccident(accident);
-                    driverRepository.save(driver);
+                    drivers.add(driver);
                 }
             }
         }
@@ -194,15 +204,17 @@ public class GeoJsonParserService {
                         if ("Водитель".equals(participant.getRole()) && participant.getGender() != null) {
                             Driver driver = new Driver();
                             driver.setGender(participant.getGender());
-                            driver.setYearsExp(participant.getYearsOfDrivingExperience() != null ? 
+                            driver.setYearsExp(participant.getYearsOfDrivingExperience() != null ?
                                 participant.getYearsOfDrivingExperience().toString() : "0");
                             driver.setAccident(accident);
-                            driverRepository.save(driver);
+                            drivers.add(driver);
                         }
                     }
                 }
             }
         }
+
+        return drivers;
     }
 }
 
