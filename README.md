@@ -37,10 +37,12 @@ src/main/java/ru/saltis/Time_Weather_SPB_DTP
 
 ## 🚀 Быстрый старт
 
-### 1. Запуск инфраструктуры
+### Запуск через докер
+
+Для запуска необходимо скачать только docker-compose файл, все остальное подгрузится с DockerHub
 
 ```bash
-docker-compose up --build
+docker-compose -p "weather_app" up -d
 ```
 
 - Поднимет PostgreSQL (`localhost:5432`)
@@ -50,18 +52,7 @@ docker-compose up --build
 Остановка:
 
 ```bash
-docker-compose down
-```
-
-### 2. Настройка приложения
-
-Конфигурация по умолчанию в `src/main/resources/application.properties`:
-
-### 3. Запуск Spring Boot
-
-```bash
-./mvnw spring-boot:run
-# либо через IDE: TimeWeatherSpbDtpApplication
+docker-compose -p "weather_app" down
 ```
 
 Приложение: <http://localhost:8080>
@@ -83,7 +74,7 @@ docker-compose down
 ## 🧪 Тестовые данные
 
 В проект включён примерный датасет: `src/main/resources/sankt-peterburg.geojson`.  
-Импортируйте его через UI, чтобы сразу увидеть статистику и диаграммы.
+Или импортируйте его через UI, чтобы сразу увидеть статистику и диаграммы.
 
 ## 📸 Галерея
 

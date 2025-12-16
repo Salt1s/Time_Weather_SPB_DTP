@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   db:
     image: postgres:15
@@ -14,14 +12,12 @@ services:
       - postgres_data:/var/lib/postgresql/data
 
   app:
-    build: .
+    image: salt1s/time_weather_spb_dtp:v1.0
     container_name: dtp_app
     ports:
       - "8080:8080"
-
     depends_on:
       - db
-
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/app_db
       - SPRING_DATASOURCE_USERNAME=postgres
