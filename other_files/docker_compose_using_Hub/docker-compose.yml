@@ -12,7 +12,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
 
   app:
-    build: .
+    image: salt1s/time_weather_spb_dtp:v1.0
     container_name: dtp_app
     ports:
       - "8080:8080"
